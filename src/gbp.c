@@ -80,14 +80,14 @@ updN_sum(neurone *n)
 DX(xupdate_weighted_sum)
 {
   int i=1;
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
   if (i<=arg_number && ISNUMBER(i)) {
-    theta = AFLT(i);
+    theta = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_theta);
-    if (p && (p->flags&C_NUMBER))
-      theta = rtoF(p->Number);
+    if (NUMBERP(p))
+      theta = rtoF(Number(p));
     else
       error("theta","Not a number",p);
     UNLOCK(p);
@@ -128,7 +128,7 @@ updN_val(neurone *n)
 DX(xupdate_state_only)
 {
   int i=1;
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
   if (i<=arg_number && NLFP(APOINTER(i))) {
     nlf = APOINTER(i)->Object;
     i++;
@@ -151,9 +151,9 @@ DX(xupdate_state_only)
 DX(xupdate_state)
 {
   int i=1;
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);  
   if (i<=arg_number && ISNUMBER(i)) {
-    theta = AFLT(i);
+    theta = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_theta);
@@ -453,7 +453,7 @@ DX(xinit_grad_thlms)
     UNLOCK(p);
   }
   if (arg_number == i+2)
-    g_threshold = AFLT(i+2);
+    g_threshold = AFLOAT(i+2);
   else {
     g_threshold = Fzero;
     ARG_NUMBER(i+1);
@@ -641,7 +641,7 @@ DX(xupdate_ggradient)
     UNLOCK(p);
   }
   if (i<=arg_number && ISNUMBER(i)) {
-    mygamma = AFLT(i);
+    mygamma = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_gamma);
@@ -679,7 +679,7 @@ DX(xupdate_lmggradient)
     UNLOCK(p);
   }
   if (i<=arg_number && ISNUMBER(i)) {
-    mygamma = AFLT(i);
+    mygamma = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_gamma);
@@ -1319,7 +1319,7 @@ DX(xupdate_weight)
   ALL_ARGS_EVAL;
 
   if (i<=arg_number && ISNUMBER(i)) {
-    alpha = AFLT(i);
+    alpha = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_alpha);
@@ -1331,7 +1331,7 @@ DX(xupdate_weight)
   }
 
   if (i<=arg_number && ISNUMBER(i)) {
-    decay = AFLT(i);
+    decay = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_decay);
@@ -1359,7 +1359,7 @@ DX(xupdate_w_newton)
   ALL_ARGS_EVAL;
 
   if (i<=arg_number && ISNUMBER(i)) {
-    alpha = AFLT(i);
+    alpha = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_alpha);
@@ -1371,7 +1371,7 @@ DX(xupdate_w_newton)
   }
 
   if (i<=arg_number && ISNUMBER(i)) {
-    decay = AFLT(i);
+    decay = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_decay);
@@ -1383,7 +1383,7 @@ DX(xupdate_w_newton)
   }
 
   if (i<=arg_number && ISNUMBER(i)) {
-    mu = AFLT(i);
+    mu = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_mu);
@@ -1466,7 +1466,7 @@ DX(xhessian_scale)
     UNLOCK(p);
   } else {
     ARG_NUMBER(1);
-    mu = AFLT(1);
+    mu = AFLOAT(1);
   }
   Hess_acc(NULL);
   return NIL;
@@ -1481,7 +1481,7 @@ DX(xupdate_delta)
   ALL_ARGS_EVAL;
 
   if (i<=arg_number && ISNUMBER(i)) {
-    alpha = AFLT(i);
+    alpha = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_alpha);
@@ -1505,7 +1505,7 @@ DX(xupdate_wghtonly)
   ALL_ARGS_EVAL;
 
   if (i<=arg_number && ISNUMBER(i)) {
-    decay = AFLT(i);
+    decay = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_decay);
@@ -1535,7 +1535,7 @@ DX(xupdate_wghtonly_conjgrad)
   
   ARG_NUMBER(1);
   ARG_EVAL(1);
-  curvature = AFLT(1);
+  curvature = AFLOAT(1);
   if (curvature <= Fzero)
     error(NIL,"Curvature must be positive",APOINTER(1));
 
