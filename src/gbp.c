@@ -89,8 +89,7 @@ DX(xupdate_weighted_sum)
     if (NUMBERP(p))
       theta = rtoF(Number(p));
     else
-      error("theta","Not a number",p);
-    UNLOCK(p);
+      error("theta","Not a number",p); 
   }
   while (i<=arg_number) {
     mapneur(ALIST(i),updN_sum);
@@ -130,15 +129,14 @@ DX(xupdate_state_only)
   int i=1;
   eval_arglist(*arg_array);
   if (i<=arg_number && NLFP(APOINTER(i))) {
-    nlf = APOINTER(i)->Object;
+    nlf = Gptr(APOINTER(i));
     i++;
   } else {
     at *p = var_get(var_nlf);
     if (NLFP(p))
-      nlf = p->Object;
+      nlf = Gptr(p);
     else
       error("nlf","not a nlf",p);
-    UNLOCK(p);
   }
   while(i<=arg_number) {
     mapneur(APOINTER(i),updN_val);
@@ -157,22 +155,20 @@ DX(xupdate_state)
     i++;
   } else {
     at *p = var_get(var_theta);
-    if (p && (p->flags&C_NUMBER))
-      theta = rtoF(p->Number);
+    if (NUMBERP(p))
+      theta = rtoF(Number(p));
     else
-      error("theta","Not a number",p);
-    UNLOCK(p);
+      error("theta","Not a number",p); 
   }
   if (i<=arg_number && NLFP(APOINTER(i))) {
-    nlf = APOINTER(i)->Object;
+    nlf = Gptr(APOINTER(i));
     i++;
   } else {
     at *p = var_get(var_nlf);
     if (NLFP(p))
-      nlf = p->Object;
+      nlf = Gptr(p);
     else
-      error("nlf","not a nlf",p);
-    UNLOCK(p);
+      error("nlf","not a nlf",p); 
   }
   while(i<=arg_number) {
     mapneur(ALIST(i),updN_sum);
@@ -228,8 +224,8 @@ updN_backsum(neurone *n)
 DX(xupdate_back_sum)
 {
   int i;
-  
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
+
   for (i=1;i<=arg_number;i++)
     mapneur(ALIST(i),updN_backsum);
   return t();
@@ -265,17 +261,17 @@ updN_grad(neurone *n)
 DX(xupdate_gradient_only)
 {
   int i=1;
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
   if (i<=arg_number && NLFP(APOINTER(i))) {
-    dnlf = APOINTER(i)->Object;
+    dnlf = Gptr(APOINTER(i));
     i++;
   } else {
     at *p = var_get(var_dnlf);
     if (NLFP(p))
-      dnlf = p->Object;
+      dnlf = Gptr(p);
     else
       error("dnlf","not a nlf",p);
-    UNLOCK(p);
+    
   }
   while (i<=arg_number) {
     mapneur(ALIST(i),updN_grad);
@@ -287,17 +283,17 @@ DX(xupdate_gradient_only)
 DX(xupdate_gradient)
 {
   int i=1;
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
   if (i<=arg_number && NLFP(APOINTER(i))) {
-    dnlf = APOINTER(i)->Object;
+    dnlf = Gptr(APOINTER(i));
     i++;
   } else {
     at *p = var_get(var_dnlf);
     if (NLFP(p))
-      dnlf = p->Object;
+      dnlf = Gptr(p);
     else
       error("dnlf","not a nlf",p);
-    UNLOCK(p);
+    
   }
   while (i<=arg_number) {
     mapneur(ALIST(i),updN_backsum);
@@ -340,17 +336,16 @@ updN_deltastate(neurone *n)
 DX(xupdate_deltastate)
 {
   int i=1;
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
   if (i<=arg_number && NLFP(APOINTER(i))) {
-    dnlf = APOINTER(i)->Object;
+    dnlf = Gptr(APOINTER(i));
     i++;
   } else {
     at *p = var_get(var_dnlf);
     if (NLFP(p))
-      dnlf = p->Object;
+      dnlf = Gptr(p);
     else
       error("dnlf","not a nlf",p);
-    UNLOCK(p);
   }
   while (i<=arg_number) {
     mapneur(ALIST(i),updN_deltastate);
@@ -391,17 +386,16 @@ iniN_lms_grad(neurone *n, neurone *ideal)
 DX(xinit_grad_lms)
 {
   int i=1;
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
   if (i<=arg_number && NLFP(APOINTER(i))) {
-    dnlf = APOINTER(i)->Object;
+    dnlf = Gptr(APOINTER(i));
     i++;
   } else {
     at *p = var_get(var_dnlf);
     if (NLFP(p))
-      dnlf = p->Object;
+      dnlf = Gptr(p);
     else
       error("dnlf","not a nlf",p);
-    UNLOCK(p);
   }
   ARG_NUMBER(i+1);
   Fclr(energie);
@@ -440,17 +434,17 @@ iniN_thlms_grad(neurone *n, neurone *ideal)
 DX(xinit_grad_thlms)
 {
   int i=1;
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
   if (i<=arg_number && NLFP(APOINTER(i))) {
-    dnlf = APOINTER(i)->Object;
+    dnlf = Gptr(APOINTER(i));
     i++;
   } else {
     at *p = var_get(var_dnlf);
     if (NLFP(p))
-      dnlf = p->Object;
+      dnlf = Gptr(p);
     else
       error("dnlf","not a nlf",p);
-    UNLOCK(p);
+    
   }
   if (arg_number == i+2)
     g_threshold = AFLOAT(i+2);
@@ -552,11 +546,11 @@ updN_ggrad(neurone *n)
     }
   else
 #endif
-  {
-    flt x = CALLDNLF(n->Nsum);
-    n->Nggrad = Fsub(Fmul( n->Nsqbacksum, Fmul(x,x) ),
-		     Fmul( n->Nbacksum, CALLDDNLF(n->Nsum)) );
-  }
+    {
+      flt x = CALLDNLF(n->Nsum);
+      n->Nggrad = Fsub(Fmul( n->Nsqbacksum, Fmul(x,x) ),
+                       Fmul( n->Nbacksum, CALLDDNLF(n->Nsum)) );
+    }
 }
 
 /* compute the instantaneous 
@@ -615,41 +609,41 @@ DX(xupdate_ggradient)
 {
   int i=1;
   
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
 
   if (i<=arg_number && NLFP(APOINTER(i))) {
-    dnlf = APOINTER(i)->Object;
+    dnlf = Gptr(APOINTER(i));
     i++;
   } else {
     at *p = var_get(var_dnlf);
     if (NLFP(p))
-      dnlf = p->Object;
+      dnlf = Gptr(p);
     else
       error("dnlf","not a nlf",p);
-    UNLOCK(p);
+    
   }
 
   if (i<=arg_number && NLFP(APOINTER(i))) {
-    ddnlf = APOINTER(i)->Object;
+    ddnlf = Gptr(APOINTER(i));
     i++;
   } else {
     at *p = var_get(var_ddnlf);
     if (NLFP(p))
-      ddnlf = p->Object;
+      ddnlf = Gptr(p);
     else
       error("ddnlf","not a nlf",p);
-    UNLOCK(p);
+    
   }
   if (i<=arg_number && ISNUMBER(i)) {
     mygamma = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_gamma);
-    if (p && (p->flags&C_NUMBER))
-      mygamma = rtoF(p->Number);
+    if (NUMBERP(p))
+      mygamma = rtoF(Number(p));
     else
       error("gamma","Not a number",p);
-    UNLOCK(p);
+    
   }
 
   while(i<=arg_number) {
@@ -665,29 +659,29 @@ DX(xupdate_ggradient)
 DX(xupdate_lmggradient)
 {
   int i=1;
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
 
   if (i<=arg_number && NLFP(APOINTER(i))) {
-    dnlf = APOINTER(i)->Object;
+    dnlf = Gptr(APOINTER(i));
     i++;
   } else {
     at *p = var_get(var_dnlf);
     if (NLFP(p))
-      dnlf = p->Object;
+      dnlf = Gptr(p);
     else
       error("dnlf","not a nlf",p);
-    UNLOCK(p);
+    
   }
   if (i<=arg_number && ISNUMBER(i)) {
     mygamma = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_gamma);
-    if (p && (p->flags&C_NUMBER))
-      mygamma = rtoF(p->Number);
+    if (NUMBERP(p))
+      mygamma = rtoF(Number(p));
     else
       error("gamma","Not a number",p);
-    UNLOCK(p);
+    
   }
 
   while(i<=arg_number) {
@@ -1048,7 +1042,7 @@ updS_all(neurone *nptr)
         amont=s->Namont;
         eps=s->Sepsilon;
         delta = Fadd( Fmul(s->Sdelta, alpha),
-		     Fmul( amont->Nval,  Fmul(preprod, eps) ));
+                      Fmul( amont->Nval,  Fmul(preprod, eps) ));
         s->Sdelta=delta;
         s->Sval = Fadd( s->Sval, delta );
       }
@@ -1094,9 +1088,9 @@ updS_all(neurone *nptr)
         delta = Fmul( amont->Nval,  preprod );
         s->Sdelta=delta;
         s->Sval = Fadd( s->Sval, delta );
-        }
       }
-    }  /* end of alpha=0, decay=0 */
+    }
+  }  /* end of alpha=0, decay=0 */
 
   else if ((alpha != Flt0) && (decay==0)) {
     for ( i=0; i<iend; i++, aval++ ) {
@@ -1109,9 +1103,9 @@ updS_all(neurone *nptr)
                       Fmul( amont->Nval, preprod ) );
         s->Sdelta=delta;
         s->Sval = Fadd( s->Sval, delta );
-        }
       }
-    }  /* end of alpha<>0, decay=0 */
+    }
+  }  /* end of alpha<>0, decay=0 */
 
   else if ((alpha==Flt0) && (decay!=Flt0)) {
     for ( i=0; i<iend; i++, aval++ ) {
@@ -1123,9 +1117,9 @@ updS_all(neurone *nptr)
         delta = Fmul( amont->Nval,  preprod );
         s->Sdelta=delta;
         s->Sval = Fadd( Fmul(predecay, s->Sval), delta );
-        }
       }
-    }  /* end of alpha=0, decay<>0 */
+    }
+  }  /* end of alpha=0, decay<>0 */
 
   else if ((alpha!=Flt0) && (decay!=Flt0)) {
     for ( i=0; i<iend; i++, aval++ ) {
@@ -1139,9 +1133,9 @@ updS_all(neurone *nptr)
                       Fmul( amont->Nval, preprod ) );
         s->Sdelta=delta;
         s->Sval = Fadd( Fmul(predecay, s->Sval), delta );
-        }
       }
-    }  /* end of alpha<>0, decay<>0 */
+    }
+  }  /* end of alpha<>0, decay<>0 */
 
 #endif /* SYNEPSILON */
 
@@ -1210,7 +1204,7 @@ updS_new_all(neurone *nptr)
         amont=s->Namont;
         eps=Fdiv(s->Sepsilon, Fadd( mu, Fabs(s->Ssigma)));
         delta = Fadd( Fmul(s->Sdelta, alpha),
-		     Fmul( amont->Nval,  Fmul(preprod, eps) ));
+                      Fmul( amont->Nval,  Fmul(preprod, eps) ));
         s->Sdelta=delta;
         s->Sval = Fadd( s->Sval, delta );
       }
@@ -1316,18 +1310,17 @@ updS_new_all(neurone *nptr)
 DX(xupdate_weight)
 {
   int i=1;
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
 
   if (i<=arg_number && ISNUMBER(i)) {
     alpha = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_alpha);
-    if (p && (p->flags&C_NUMBER))
-      alpha = rtoF(p->Number);
+    if (NUMBERP(p))
+      alpha = rtoF(Number(p));
     else
       error("alpha","Not a number",p);
-    UNLOCK(p);
   }
 
   if (i<=arg_number && ISNUMBER(i)) {
@@ -1335,11 +1328,10 @@ DX(xupdate_weight)
     i++;
   } else {
     at *p = var_get(var_decay);
-    if (p && (p->flags&C_NUMBER))
-      decay = rtoF(p->Number);
+    if (NUMBERP(p))
+      decay = rtoF(Number(p));
     else
       error("decay","Not a number",p);
-    UNLOCK(p);
   }
 
   if (arg_number<i)
@@ -1356,18 +1348,18 @@ DX(xupdate_weight)
 DX(xupdate_w_newton)
 {
   int i=1;
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
 
   if (i<=arg_number && ISNUMBER(i)) {
     alpha = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_alpha);
-    if (p && (p->flags&C_NUMBER))
-      alpha = rtoF(p->Number);
+    if (NUMBERP(p))
+      alpha = rtoF(Number(p));
     else
       error("alpha","Not a number",p);
-    UNLOCK(p);
+    
   }
 
   if (i<=arg_number && ISNUMBER(i)) {
@@ -1375,11 +1367,11 @@ DX(xupdate_w_newton)
     i++;
   } else {
     at *p = var_get(var_decay);
-    if (p && (p->flags&C_NUMBER))
-      decay = rtoF(p->Number);
+    if (NUMBERP(p))
+      decay = rtoF(Number(p));
     else
       error("decay","Not a number",p);
-    UNLOCK(p);
+    
   }
 
   if (i<=arg_number && ISNUMBER(i)) {
@@ -1387,11 +1379,11 @@ DX(xupdate_w_newton)
     i++;
   } else {
     at *p = var_get(var_mu);
-    if (p && (p->flags&C_NUMBER))
-      mu = rtoF(p->Number);
+    if (NUMBERP(p))
+      mu = rtoF(Number(p));
     else
       error("mu","Not a number",p);
-    UNLOCK(p);
+    
   }
 
   if (arg_number<i)
@@ -1456,14 +1448,14 @@ DX(xupdate_hess)
 
 DX(xhessian_scale)
 {
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
   if (arg_number==0) {
     at *p = var_get(var_mu);
-    if (p && (p->flags&C_NUMBER))
-      mu = rtoF(p->Number);
+    if (NUMBERP(p))
+      mu = rtoF(Number(p));
     else
       error("mu","not a number",p);
-    UNLOCK(p);
+    
   } else {
     ARG_NUMBER(1);
     mu = AFLOAT(1);
@@ -1478,18 +1470,18 @@ DX(xhessian_scale)
 DX(xupdate_delta)
 {
   int i=1;
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
 
   if (i<=arg_number && ISNUMBER(i)) {
     alpha = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_alpha);
-    if (p && (p->flags&C_NUMBER))
-      alpha = rtoF(p->Number);
+    if (NUMBERP(p))
+      alpha = rtoF(Number(p));
     else
       error("alpha","Not a number",p);
-    UNLOCK(p);
+    
   }
   if (arg_number<i)
     updS_delta(NULL);
@@ -1502,18 +1494,17 @@ DX(xupdate_delta)
 DX(xupdate_wghtonly)
 {
   int i=1;
-  ALL_ARGS_EVAL;
+  eval_arglist(*arg_array);
 
   if (i<=arg_number && ISNUMBER(i)) {
     decay = AFLOAT(i);
     i++;
   } else {
     at *p = var_get(var_decay);
-    if (p && (p->flags&C_NUMBER))
-      decay = rtoF(p->Number);
+    if (NUMBERP(p))
+      decay = rtoF(Number(p));
     else
-      error("decay","Not a number",p);
-    UNLOCK(p);
+      error("decay","Not a number",p); 
   }
   if(arg_number<i)
     updS_val(NULL);

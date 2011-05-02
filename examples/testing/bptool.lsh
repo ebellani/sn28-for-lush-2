@@ -1,4 +1,1 @@
-
-(addpath "/home/b-man/Projects/lush2-improved/packages") ;; main packages location
-
 (libload "sn28/sn28ite")

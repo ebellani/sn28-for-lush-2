@@ -191,7 +191,7 @@ struct nlf {
 extern class_t nlf_class;
 extern struct nlf *nlf,*dnlf,*ddnlf;
 
-#define NLFP(p)  ((p) && ((p)->flags&C_EXTERN) && ((p)->Class==&nlf_class))
+#define NLFP(p)  ((p) && (Class(p) == &nlf_class))
 
 #define CALLNLF(x)  (*((nlf)->f))(nlf,(x))
 #define CALLDNLF(x)  (*((dnlf)->f))(dnlf,(x))
